@@ -1,19 +1,22 @@
 # Restaurant Menu Template
 
-Next.js + Tailwind starter for an online restaurant menu.
+Next.js App Router + Supabase + Cloudinary + Resend + next-intl (BG/EN).
 
-## Dev
+## Setup
 
-```bash
-npm install
-npm run dev
-```
+1. Copy `.env.example` → `.env.local` and fill values.
+2. Run `supabase/schema.sql` in Supabase SQL Editor.
+3. `npm install` && `npm run dev`
 
-Open [http://localhost:3000](http://localhost:3000). Edit `app/page.tsx` to build the menu.
+## Routes
 
-## Stack
+| Path | Description |
+|------|-------------|
+| `/bg`, `/en` | Public menu + contact |
+| `/admin/login` | Password gate (`PASSWORD` env) |
+| `/admin/categories` | Category CRUD |
+| `/admin/menu-items` | Menu item CRUD |
 
-- Next.js 16 (App Router)
-- React 19
-- Tailwind CSS 4
-- TypeScript
+## Env
+
+See `.env.example`. Public site uses anon key; admin uses `SUPABASE_SERVICE_ROLE_KEY`.

@@ -1,25 +1,11 @@
-import type { Metadata } from "next";
-import { Geist } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "Restaurant Menu",
-  description: "Online restaurant menu",
-};
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
-      <body className="min-h-full font-sans">{children}</body>
+    <html suppressHydrationWarning>
+      <body className="min-h-screen">{children}</body>
     </html>
   );
 }
