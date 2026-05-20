@@ -10,6 +10,8 @@ export function middleware(req: NextRequest) {
 
   if (pathname.startsWith("/api")) return NextResponse.next();
 
+  if (pathname.startsWith("/menu")) return NextResponse.next();
+
   if (pathname.startsWith("/admin")) {
     if (pathname === "/admin/login") return NextResponse.next();
     if (req.cookies.get(ADMIN_COOKIE)?.value === "1") return NextResponse.next();
@@ -20,5 +22,12 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/(bg|en)", "/(bg|en)/:path*", "/admin/:path*"],
+  matcher: [
+    "/",
+    "/(bg|en)",
+    "/(bg|en)/:path*",
+    "/admin/:path*",
+    "/menu",
+    "/menu/:path*",
+  ],
 };

@@ -32,6 +32,7 @@ type Form = {
   price: number;
   sort_number: number;
   is_featured: boolean;
+  is_available: boolean;
   image_url: string | null;
 };
 
@@ -57,6 +58,7 @@ export function MenuItemForm({
     price: initial ? Number(initial.price) : 0,
     sort_number: initial?.sort_number ?? 0,
     is_featured: initial?.is_featured ?? false,
+    is_available: initial?.is_available ?? true,
     image_url: initial?.image_url ?? null,
   });
 
@@ -189,7 +191,7 @@ export function MenuItemForm({
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label>price</Label>
+            <Label>Price (EUR)</Label>
             <Input
               type="number"
               step="0.01"
@@ -210,14 +212,27 @@ export function MenuItemForm({
             <p className="mt-1 text-xs text-zinc-500">Higher value appears first in menu</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="featured"
-            checked={form.is_featured}
-            onCheckedChange={(v) => setForm({ ...form, is_featured: v === true })}
-          />
-          <Label htmlFor="featured">Featured</Label>
+        <div className="flex flex-wrap gap-6">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="available"
+              checked={form.is_available}
+              onCheckedChange={(v) => setForm({ ...form, is_available: v === true })}
+            />
+            <Label htmlFor="available">Available</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="featured"
+              checked={form.is_featured}
+              onCheckedChange={(v) => setForm({ ...form, is_featured: v === true })}
+            />
+            <Label htmlFor="featured">Featured</Label>
+          </div>
         </div>
+        {!form.is_available ? (
+          <p className="text-sm text-amber-700">Not available — hidden from public menu.</p>
+        ) : null}
         {err ? <p className="text-sm text-red-600">{err}</p> : null}
         <Button type="submit" className="w-full" disabled={busy}>
           {busy ? "Saving..." : "Save"}

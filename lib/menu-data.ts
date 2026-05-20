@@ -11,7 +11,8 @@ export async function getMenuData() {
   ]);
 
   const categories = (cats.data ?? []) as Category[];
-  const menuItems = (items.data ?? []) as MenuItem[];
+  const allItems = (items.data ?? []) as MenuItem[];
+  const menuItems = allItems.filter((i) => i.is_available !== false);
   const featured = menuItems.filter((i) => i.is_featured);
 
   const byCat = categories.map((c) => ({

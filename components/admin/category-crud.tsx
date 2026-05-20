@@ -42,6 +42,7 @@ export function CategoryCrud({ rows }: { rows: Category[] }) {
           <TableRow>
             <TableHead>Image</TableHead>
             <TableHead>Name (BG)</TableHead>
+            <TableHead>Slug</TableHead>
             <TableHead>Name (EN)</TableHead>
             <TableHead>Sort Order</TableHead>
             <TableHead />
@@ -62,6 +63,7 @@ export function CategoryCrud({ rows }: { rows: Category[] }) {
                 </div>
               </TableCell>
               <TableCell>{r.name_bg}</TableCell>
+              <TableCell className="font-mono text-xs text-zinc-600">{r.slug}</TableCell>
               <TableCell>{r.name_en}</TableCell>
               <TableCell>{r.sort_order}</TableCell>
               <TableCell className="text-right">

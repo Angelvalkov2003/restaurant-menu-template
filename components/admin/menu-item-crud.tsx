@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { deleteMenuItem } from "@/app/admin/actions";
+import { deleteMenuItem, setMenuItemAvailability } from "@/app/admin/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -22,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { imgUrl } from "@/lib/utils";
+import { cn, imgUrl } from "@/lib/utils";
 import type { Category, MenuItem } from "@/types/db";
 
 export function MenuItemCrud({
@@ -32,11 +34,19 @@ export function MenuItemCrud({
   rows: MenuItem[];
   categories: Category[];
 }) {
+  const router = useRouter();
   const [filter, setFilter] = useState<string>("all");
   const [delId, setDelId] = useState<string | null>(null);
+  const [items, setItems] = useState(rows);
+  const [toggleErr, setToggleErr] = useState("");
+
+  useEffect(() => {
+    setItems(rows);
+  }, [rows]);
+
   const filtered = useMemo(
-    () => (filter === "all" ? rows : rows.filter((r) => r.category_id === filter)),
-    [rows, filter],
+    () => (filter === "all" ? items : items.filter((r) => r.category_id === filter)),
+    [items, filter],
   );
 
   const catName = (id: string) => categories.find((c) => c.id === id)?.name_bg ?? "—";
@@ -44,6 +54,24 @@ export function MenuItemCrud({
   async function del(id: string) {
     await deleteMenuItem(id);
     setDelId(null);
+    router.refresh();
+  }
+
+  async function toggleAvailable(row: MenuItem) {
+    const next = !row.is_available;
+    setToggleErr("");
+    setItems((prev) =>
+      prev.map((r) => (r.id === row.id ? { ...r, is_available: next } : r)),
+    );
+    try {
+      await setMenuItemAvailability(row.id, next);
+      router.refresh();
+    } catch {
+      setItems((prev) =>
+        prev.map((r) => (r.id === row.id ? { ...r, is_available: row.is_available } : r)),
+      );
+      setToggleErr("Could not update availability");
+    }
   }
 
   return (
@@ -73,9 +101,12 @@ export function MenuItemCrud({
         </div>
       </div>
 
+      {toggleErr ? <p className="mb-3 text-sm text-red-600">{toggleErr}</p> : null}
+
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Available</TableHead>
             <TableHead>Image</TableHead>
             <TableHead>Name (BG)</TableHead>
             <TableHead>Portion</TableHead>
@@ -87,7 +118,17 @@ export function MenuItemCrud({
         </TableHeader>
         <TableBody>
           {filtered.map((r) => (
-            <TableRow key={r.id}>
+            <TableRow
+              key={r.id}
+              className={cn(!r.is_available && "bg-zinc-50/80 opacity-75")}
+            >
+              <TableCell>
+                <Checkbox
+                  checked={r.is_available}
+                  onCheckedChange={() => toggleAvailable(r)}
+                  aria-label={`Available: ${r.name_bg}`}
+                />
+              </TableCell>
               <TableCell>
                 <div className="relative h-10 w-10 overflow-hidden rounded">
                   <Image
@@ -100,9 +141,14 @@ export function MenuItemCrud({
                 </div>
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {r.name_bg}
                   {r.is_featured ? <Badge>Featured</Badge> : null}
+                  {!r.is_available ? (
+                    <Badge variant="outline" className="text-amber-800">
+                      Unavailable
+                    </Badge>
+                  ) : null}
                 </div>
               </TableCell>
               <TableCell>

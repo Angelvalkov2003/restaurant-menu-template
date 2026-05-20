@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS categories (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name_bg text NOT NULL,
   name_en text NOT NULL,
+  slug text NOT NULL,
   image_url text,
   sort_order int NOT NULL DEFAULT 0,
   created_at timestamptz NOT NULL DEFAULT now()
@@ -14,6 +15,7 @@ CREATE TABLE IF NOT EXISTS categories (
 COMMENT ON TABLE categories IS 'Menu sections; sort_order controls display order in admin lists.';
 COMMENT ON COLUMN categories.name_bg IS 'Bulgarian display name';
 COMMENT ON COLUMN categories.name_en IS 'English display name';
+COMMENT ON COLUMN categories.slug IS 'URL slug from name_bg (latin, lowercase, no spaces)';
 
 -- Menu items (dishes)
 CREATE TABLE IF NOT EXISTS menu_items (
@@ -28,12 +30,14 @@ CREATE TABLE IF NOT EXISTS menu_items (
   price numeric(10, 2) NOT NULL,
   sort_number int NOT NULL DEFAULT 0,
   is_featured boolean NOT NULL DEFAULT false,
+  is_available boolean NOT NULL DEFAULT true,
   image_url text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
 COMMENT ON TABLE menu_items IS 'Dishes; sort_number DESC = shown first on public menu.';
 COMMENT ON COLUMN menu_items.is_featured IS 'Shown in homepage featured section when true';
+COMMENT ON COLUMN menu_items.is_available IS 'When false, hidden from public menu but visible in admin';
 COMMENT ON COLUMN menu_items.portion_value IS 'Portion amount as free text, e.g. 250';
 COMMENT ON COLUMN menu_items.portion_unit IS 'Portion unit: g or ml';
 
@@ -59,6 +63,14 @@ ALTER TABLE menu_items
 
 ALTER TABLE menu_items
   ADD COLUMN IF NOT EXISTS portion_unit text;
+
+ALTER TABLE menu_items
+  ADD COLUMN IF NOT EXISTS is_available boolean NOT NULL DEFAULT true;
+
+ALTER TABLE categories
+  ADD COLUMN IF NOT EXISTS slug text;
+
+CREATE UNIQUE INDEX IF NOT EXISTS categories_slug_idx ON categories(slug);
 
 DO $$
 BEGIN

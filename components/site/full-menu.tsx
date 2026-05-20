@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { PriceDisplay } from "@/components/price-display";
 import { t } from "@/lib/locale";
 import { imgUrl } from "@/lib/utils";
 import type { Category, MenuItem } from "@/types/db";
@@ -67,9 +68,7 @@ export async function FullMenu({
                           </p>
                         )}
                       </div>
-                      <span className="shrink-0 font-medium text-amber-700">
-                        {Number(item.price).toFixed(2)} {tMenu("price")}
-                      </span>
+                      <PriceDisplay eur={item.price} locale={locale} />
                     </li>
                   ))}
                 </ul>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PriceDisplay } from "@/components/price-display";
 import { t } from "@/lib/locale";
 import { imgUrl } from "@/lib/utils";
 import type { MenuItem } from "@/types/db";
@@ -38,9 +39,7 @@ export function MenuItemCard({
             <h3 className="font-medium">{name}</h3>
             {portion ? <p className="text-xs text-zinc-500">{portion}</p> : null}
           </div>
-          <span className="shrink-0 text-amber-700">
-            {Number(item.price).toFixed(2)}
-          </span>
+          <PriceDisplay eur={item.price} locale={locale} />
         </div>
         {desc ? <p className="mt-2 text-sm text-zinc-500">{desc}</p> : null}
       </div>

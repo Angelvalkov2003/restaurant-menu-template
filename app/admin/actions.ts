@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { assertAdmin } from "@/lib/admin";
 import { supabaseAdmin } from "@/lib/supabase";
+import { slugFromBg } from "@/lib/slug";
 
 function revalidate() {
   revalidatePath("/");
@@ -19,20 +20,23 @@ export async function saveCategory(data: {
   name_en: string;
   image_url: string | null;
   sort_order: number;
+  slug?: string;
 }) {
   await assertAdmin();
   const db = supabaseAdmin();
+  const slug = slugFromBg(data.slug || data.name_bg);
+  const row = {
+    name_bg: data.name_bg,
+    name_en: data.name_en,
+    slug,
+    image_url: data.image_url,
+    sort_order: data.sort_order,
+  };
   if (data.id) {
-    const { id, ...row } = data;
-    const { error } = await db.from("categories").update(row).eq("id", id);
+    const { error } = await db.from("categories").update(row).eq("id", data.id);
     if (error) throw error;
   } else {
-    const { error } = await db.from("categories").insert({
-      name_bg: data.name_bg,
-      name_en: data.name_en,
-      image_url: data.image_url,
-      sort_order: data.sort_order,
-    });
+    const { error } = await db.from("categories").insert(row);
     if (error) throw error;
   }
   revalidate();
@@ -57,6 +61,7 @@ export async function saveMenuItem(data: {
   price: number;
   sort_number: number;
   is_featured: boolean;
+  is_available: boolean;
   image_url: string | null;
 }) {
   await assertAdmin();
@@ -72,6 +77,7 @@ export async function saveMenuItem(data: {
     price: data.price,
     sort_number: data.sort_number,
     is_featured: data.is_featured,
+    is_available: data.is_available,
     image_url: data.image_url,
   };
   if (data.id) {
@@ -87,6 +93,16 @@ export async function saveMenuItem(data: {
 export async function deleteMenuItem(id: string) {
   await assertAdmin();
   const { error } = await supabaseAdmin().from("menu_items").delete().eq("id", id);
+  if (error) throw error;
+  revalidate();
+}
+
+export async function setMenuItemAvailability(id: string, is_available: boolean) {
+  await assertAdmin();
+  const { error } = await supabaseAdmin()
+    .from("menu_items")
+    .update({ is_available })
+    .eq("id", id);
   if (error) throw error;
   revalidate();
 }

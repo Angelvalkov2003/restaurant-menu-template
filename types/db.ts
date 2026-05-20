@@ -2,6 +2,7 @@ export type Category = {
   id: string;
   name_bg: string;
   name_en: string;
+  slug: string;
   image_url: string | null;
   sort_order: number;
   created_at: string;
@@ -19,6 +20,7 @@ export type MenuItem = {
   price: number;
   sort_number: number;
   is_featured: boolean;
+  is_available: boolean;
   image_url: string | null;
   created_at: string;
   categories?: Pick<Category, "name_bg" | "name_en"> | null;
