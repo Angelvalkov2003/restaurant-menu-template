@@ -36,6 +36,7 @@ export default async function MenuCategoryPage({
   const q = locale === "en" ? "?lang=en" : "";
 
   return (
+    <CategoryEnter>
     <main className="min-h-dvh pb-16">
       <div className="relative h-[min(42vh,320px)] w-full overflow-hidden">
         <Image
@@ -60,23 +61,22 @@ export default async function MenuCategoryPage({
         </h1>
       </div>
 
-      <CategoryEnter>
-        <section className="mx-auto max-w-lg px-4 pt-8 sm:max-w-2xl">
-          {items.length === 0 ? (
-            <p className="text-center text-white/50">
-              {locale === "bg" ? "Няма ястия." : "No dishes yet."}
-            </p>
-          ) : (
-            <ul className="flex flex-col gap-3">
-              {items.map((item) => (
-                <li key={item.id}>
-                  <MenuFoodCard item={item} locale={locale} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </CategoryEnter>
+      <section className="mx-auto max-w-lg px-4 pt-8 sm:max-w-2xl">
+        {items.length === 0 ? (
+          <p className="text-center text-white/50">
+            {locale === "bg" ? "Няма ястия." : "No dishes yet."}
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {items.map((item) => (
+              <li key={item.id}>
+                <MenuFoodCard item={item} locale={locale} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
+    </CategoryEnter>
   );
 }

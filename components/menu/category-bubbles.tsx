@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { slugFromEn } from "@/lib/slug";
 import { t } from "@/lib/locale";
 import { imgUrl } from "@/lib/utils";
-import { useMenuGo, useMenuActive } from "@/components/menu/menu-shell";
+import { useMenuGo } from "@/components/menu/menu-shell";
 import type { Category } from "@/types/db";
 
 const BUBBLE =
@@ -53,7 +53,6 @@ export function CategoryBubbles({
   locale?: string;
 }) {
   const go = useMenuGo();
-  const active = useMenuActive();
   let idx = 0;
 
   return (
@@ -70,32 +69,21 @@ export function CategoryBubbles({
             const name = t(locale, cat.name_bg, cat.name_en);
             const i = idx++;
             const src = imgUrl(cat.image_url, cat.id);
-            const isActive = active === slug;
-            const dimOthers = active && !isActive;
-
             return (
               <li key={cat.id}>
                 <motion.button
                   type="button"
                   aria-label={name}
-                  disabled={!!active}
-                  onClick={(e) => go(slug, e.currentTarget, src)}
+                  onClick={() => go(slug)}
                   className={`${BUBBLE} rounded-full shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_12px_32px_rgba(0,0,0,0.55),0_0_50px_rgba(130,150,220,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40`}
                   initial={{ opacity: 0, scale: 0.6 }}
-                  animate={{
-                    opacity: isActive ? 0 : dimOthers ? 0.15 : 1,
-                    scale: dimOthers ? 0.88 : 1,
-                    filter: dimOthers ? "blur(6px)" : "blur(0px)",
-                  }}
+                  animate={{ opacity: 1, scale: 1 }}
                   transition={{
-                    opacity: { duration: active ? 0.12 : 0.2 },
-                    scale: active
-                      ? { duration: 0.12 }
-                      : { delay: i * 0.05, duration: 0.5 },
-                    filter: { duration: 0.25 },
+                    opacity: { duration: 0.2 },
+                    scale: { delay: i * 0.05, duration: 0.5 },
                   }}
-                  whileHover={active ? undefined : { scale: 1.05 }}
-                  whileTap={active ? undefined : { scale: 0.92 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <span className="relative block h-full w-full overflow-hidden rounded-full border border-white/25 bg-white/10 backdrop-blur-md">
                     <Image
@@ -108,13 +96,9 @@ export function CategoryBubbles({
                     />
                     <span className="absolute inset-0 bg-white/5" />
                     <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent pt-8" />
-                    <motion.span
-                      className="absolute inset-x-0 bottom-0 max-w-full px-2 pb-2 text-center text-[10px] font-medium leading-[1.15] tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] sm:text-[11px]"
-                      animate={{ opacity: isActive ? 0 : 1 }}
-                      transition={{ duration: 0.1 }}
-                    >
+                    <span className="absolute inset-x-0 bottom-0 max-w-full px-2 pb-2 text-center text-[10px] font-medium leading-[1.15] tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] sm:text-[11px]">
                       {bubbleLabel(name)}
-                    </motion.span>
+                    </span>
                   </span>
                 </motion.button>
               </li>
